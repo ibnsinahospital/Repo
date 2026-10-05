@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Debug | Bhat Foundation</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="padding:20px;font-family:monospace;font-size:13px;line-height:1.6;">
+
+<h1 style="font-size:20px;">Report Fetch Diagnostic</h1>
+
+<div id="output" style="background:#f5f5f5;padding:20px;border-radius:8px;white-space:pre-wrap;word-break:break-word;margin-top:20px;">Running tests...</div>
+
+<script src="js/projects-data.js"></script>
+<script>
+(function () {
+  var out = document.getElementById('output');
+  var log = function (msg) { out.textContent += '\n\n' + msg; };
+  out.textContent = 'Starting...';
+
+  // Test 1: Did projects-data.js load?
+  if (typeof loadProjects !== 'function') {
+    log('❌ TEST 1 FAILED: js/projects-data.js did NOT load or did not define loadProjects().');
+    log('→ Check that the file exists at: /js/projects-data.js');
+    log('→ Open https://your-site.netlify.app/js/projects-data.js in browser — should show JS code.');
+    return;
+  }
+  log('✅ TEST 1: js/projects-data.js loaded, loadProjects() exists.');
+
+  // Test 2: Can we reach the CSV URL?
+  var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQE8hw5Bif58L-qzPb66-0uosS0nUUxKBniR8l6v7SlwWnp1ygFE1Y-AqxaHktvhq_XonSEqqpGxg__/pub?output=csv";
+  log('Testing fetch to: ' + CSV_URL.substring(0, 70) + '...');
+
+  fetch(CSV_URL)
+    .then(function (r) {
+      log('✅ TEST 2: Fetch reached Google. HTTP ' + r.status + ' ' + r.statusText);
+      return r.text();
+    })
+    .then(function (text) {
+      log('📄 TEST 3: Response size = ' + text.length + ' bytes');
+      log('First 400 characters:\n' + text.substring(0, 400));
+
+      if (text.length < 50) {
+        log('❌ Response is too small — sheet may be empty.');
+        return;
+      }
+      log('✅ TEST 4: Sheet returned data.');
+
+      return loadProjects().then(function (projects) {
+        log('✅ TEST 5: loadProjects() returned ' + projects.length + ' items.');
+        if (projects.length) {
+          log('First project:\n' + JSON.stringify(projects[0], null, 2));
+        } else {
+          log('❌ No projects parsed. Check that row 2 has data and headers match.');
+        }
+      });
+    })
+    .catch(function (err) {
+      log('❌ FETCH FAILED');
+      log('Error: ' + (err && err.message ? err.message : err));
+      log('\nPossible causes:');
+      log('1. The CSV URL is wrong');
+      log('2. The sheet is not published to web as CSV');
+      log('3. Network/CORS block — rare for Google Sheets');
+    });
+})();
+</script>
+</body>
+</html>
