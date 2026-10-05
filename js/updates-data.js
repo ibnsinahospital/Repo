@@ -1,14 +1,15 @@
 /* ==========================================================================
-   Bhat Foundation Welfare Society — Projects & Reports Loader
-   Reads rows from the published Projects Google Sheet.
-   Used by: reports.html
+   Bhat Foundation Welfare Society — Gallery + Daily Updates Loader
+   Fetches from two published Google Sheets (CSV format).
+   Used by: index.html, updates.html
    ========================================================================== */
 
-/* ---------- 1. Published Projects CSV URL ---------- */
-const PROJECTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQE8hw5Bif58L-qzPb66-0uosS0nUUxKBniR8l6v7SlwWnp1ygFE1Y-AqxaHktvhq_XonSEqqpGxg__/pub?output=csv";
+/* ---------- 1. Published CSV URLs ---------- */
+const GALLERY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vST8P-rbbS2p43Om31Q9wG-JGxsRGd3lZmf5wYTq6LQbbUJOxtkW4sHIyNQC5tyKvUWhz5am80NwBsS/pub?output=csv";
+const UPDATES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3oKKIoMq_mUKqSYvZM4uGBp7ZPgKD3xhs3p1acPyH8tWijmurORJ8XiwtDU7xZv_X1_Vq9PyRxq0J/pub?output=csv";
 
 /* ---------- 2. CSV parser ---------- */
-function parseCSVProject(text) {
+function parseCSV(text) {
   var rows = [], row = [], field = "", inQuotes = false, i = 0;
   if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
   while (i < text.length) {
@@ -32,12 +33,11 @@ function parseCSVProject(text) {
   });
 }
 
-/* Normalise header names — trim, lowercase, hyphens → underscores, spaces → underscores */
 function normaliseHeader(h) {
   return String(h).trim().toLowerCase().replace(/-/g, "_").replace(/\s+/g, "_");
 }
 
-function csvToObjectsProject(rows) {
+function csvToObjects(rows) {
   if (!rows.length) return [];
   var headers = rows[0].map(normaliseHeader);
   var out = [];
@@ -55,59 +55,55 @@ function csvToObjectsProject(rows) {
   return out;
 }
 
-/* ---------- 3. Extract Google Drive file ID from any share link ---------- */
-function extractDriveId(url) {
-  if (!url) return "";
-  url = String(url).trim();
-
-  // Bare file ID
-  if (/^[A-Za-z0-9_-]{20,}$/.test(url)) return url;
-
-  // /file/d/ID/view
-  var m = url.match(/\/file\/d\/([A-Za-z0-9_-]+)/);
-  if (m) return m[1];
-
-  // ?id=ID or &id=ID
-  m = url.match(/[?&]id=([A-Za-z0-9_-]+)/);
-  if (m) return m[1];
-
-  // /d/ID
-  m = url.match(/\/d\/([A-Za-z0-9_-]+)/);
-  if (m) return m[1];
-
-  return url;
-}
-
-/* ---------- 4. Fetch + normalise projects ---------- */
-function loadProjects() {
-  if (!PROJECTS_CSV_URL || PROJECTS_CSV_URL.indexOf("PASTE_") === 0) {
-    return Promise.resolve([]);
-  }
-
-  return fetch(PROJECTS_CSV_URL, { method: "GET", redirect: "follow", cache: "no-store" })
+function fetchCSV(url) {
+  if (!url) return Promise.resolve([]);
+  return fetch(url, { method: "GET", redirect: "follow", cache: "no-store" })
     .then(function (res) {
       if (!res.ok) throw new Error("HTTP " + res.status);
       return res.text();
     })
-    .then(function (text) {
-      return csvToObjectsProject(parseCSVProject(text))
-        .filter(function (p) { return p.title && p.title.trim(); })
-        .map(function (p) {
-          var ord = Number(p.order);
-          return {
-            title: (p.title || "").trim(),
-            date: (p.date || "").trim(),
-            category: (p.category || "").trim(),
-            summary: (p.summary || "").trim(),
-            pdfId: extractDriveId((p.pdf_url || "").trim()),
-            thumbnail: (p.thumbnail || "").trim(),
-            order: isNaN(ord) ? 9999 : ord
-          };
-        })
-        .sort(function (a, b) { return a.order - b.order; });
-    })
-    .catch(function (err) {
-      console.warn("Projects CSV failed:", err);
-      return [];
-    });
+    .then(function (text) { return csvToObjects(parseCSV(text)); });
+}
+
+/* ---------- 3. Loader ---------- */
+function loadSiteContent() {
+  var galleryPromise = fetchCSV(GALLERY_CSV_URL).catch(function (err) {
+    console.warn("Gallery CSV failed:", err);
+    return [];
+  });
+  var updatesPromise = fetchCSV(UPDATES_CSV_URL).catch(function (err) {
+    console.warn("Updates CSV failed:", err);
+    return [];
+  });
+
+  return Promise.all([galleryPromise, updatesPromise]).then(function (results) {
+    var galleryRows = results[0] || [];
+    var updateRows = results[1] || [];
+
+    var gallery = galleryRows
+      .filter(function (g) { return g.image && g.image.trim(); })
+      .map(function (g) {
+        var ord = Number(g.order);
+        return {
+          image: g.image.trim(),
+          caption: (g.caption || "").trim(),
+          order: isNaN(ord) ? 9999 : ord
+        };
+      })
+      .sort(function (a, b) { return a.order - b.order; })
+      .map(function (g) { return { image: g.image, caption: g.caption }; });
+
+    var updates = updateRows
+      .filter(function (u) { return u.title && u.title.trim(); })
+      .map(function (u) {
+        return {
+          date: (u.date || "").trim(),
+          tag: (u.tag || "").trim(),
+          title: (u.title || "").trim(),
+          excerpt: (u.excerpt || "").trim()
+        };
+      });
+
+    return { gallery: gallery, updates: updates };
+  });
 }
