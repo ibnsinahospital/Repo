@@ -121,18 +121,13 @@
         <p class="section-sub">Tap any report to read the full PDF — opens directly on the Reports page.</p>
       </div>
 
-      <!-- Filter chips -->
-      <div class="filter-bar" id="filterBar" role="tablist" aria-label="Filter by category">
-        <!-- Chips injected by JS -->
-      </div>
+      <div class="filter-bar" id="filterBar" role="tablist" aria-label="Filter by category"></div>
 
       <div class="reports-grid" id="projectReportsGrid">
         <div class="loading-state">Loading projects…</div>
       </div>
 
-      <p id="projectReportsEmpty" style="display:none;text-align:center;color:var(--muted);margin-top:24px;">
-        No reports found for this category.
-      </p>
+      <p id="projectReportsEmpty" style="display:none;text-align:center;color:var(--muted);margin-top:24px;"></p>
     </div>
   </section>
 
@@ -227,6 +222,16 @@
     return d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear();
   }
 
+  // All programme-card categories — filter chips always shown for these
+  var PROGRAMME_CATEGORIES = [
+    'Medical Camp',
+    'Education',
+    'Women',
+    'Awareness',
+    'Relief',
+    'Environment'
+  ];
+
   var allReports = [];
   var activeFilter = 'all';
 
@@ -282,9 +287,12 @@
     activeFilter = filter;
     var grid = document.getElementById('projectReportsGrid');
     var empty = document.getElementById('projectReportsEmpty');
+    if (!grid) return;
 
-    var filtered = allReports;
-    if (filter !== 'all') {
+    var filtered;
+    if (filter === 'all') {
+      filtered = allReports;
+    } else {
       filtered = allReports.filter(function (p) {
         return String(p.category || '').toLowerCase() === String(filter).toLowerCase();
       });
@@ -293,14 +301,21 @@
     if (!filtered.length) {
       grid.innerHTML = '';
       grid.style.display = 'none';
-      if (empty) empty.style.display = 'block';
+      if (empty) {
+        empty.style.display = 'block';
+        if (filter === 'all') {
+          empty.textContent = 'No reports have been published yet. Please check back soon.';
+        } else {
+          empty.textContent = 'No reports yet for "' + filter + '". Please check back soon.';
+        }
+      }
     } else {
       grid.style.display = '';
       if (empty) empty.style.display = 'none';
       grid.innerHTML = filtered.map(buildCard).join('');
     }
 
-    // Update chip active state
+    // Chip active state
     document.querySelectorAll('.filter-chip').forEach(function (chip) {
       var isActive = chip.getAttribute('data-filter') === filter;
       chip.classList.toggle('is-active', isActive);
@@ -312,25 +327,29 @@
     var bar = document.getElementById('filterBar');
     if (!bar) return;
 
-    // Collect unique categories, preserving order of first appearance
+    // Gather categories from sheet
+    var sheetCats = [];
     var seen = {};
-    var cats = [];
     reports.forEach(function (p) {
       var c = (p.category || '').trim();
       if (!c) return;
       var key = c.toLowerCase();
-      if (!seen[key]) { seen[key] = true; cats.push(c); }
+      if (!seen[key]) { seen[key] = true; sheetCats.push(c); }
     });
 
-    if (cats.length < 2) {
-      // Only one category (or none) — hide the filter bar
-      bar.style.display = 'none';
-      return;
-    }
+    // Union of sheet categories + programme categories (preserve order: sheet first, then missing programme cats)
+    var finalCats = sheetCats.slice();
+    PROGRAMME_CATEGORIES.forEach(function (pc) {
+      var exists = false;
+      finalCats.forEach(function (c) {
+        if (c.toLowerCase() === pc.toLowerCase()) exists = true;
+      });
+      if (!exists) finalCats.push(pc);
+    });
 
     bar.innerHTML = '';
 
-    // "All" chip first
+    // "All" chip
     var allChip = document.createElement('button');
     allChip.type = 'button';
     allChip.className = 'filter-chip is-active';
@@ -344,8 +363,8 @@
     });
     bar.appendChild(allChip);
 
-    // One chip per category
-    cats.forEach(function (c) {
+    // Category chips
+    finalCats.forEach(function (c) {
       var chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'filter-chip';
@@ -366,18 +385,7 @@
       var target = card.getAttribute('data-filter');
 
       function trigger() {
-        // If the filter exists in the sheet, apply it; otherwise show all
-        var bar = document.getElementById('filterBar');
-        var chipExists = false;
-        if (bar) {
-          chipExists = !!bar.querySelector('.filter-chip[data-filter="' + CSS.escape(target) + '"]');
-        }
-        var filterToUse = chipExists ? target : 'all';
-
-        // Make the chip active + filter
-        applyFilter(filterToUse);
-
-        // Scroll to reports section
+        applyFilter(target);
         var sec = document.getElementById('project-reports');
         if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -395,7 +403,10 @@
       var grid = document.getElementById('projectReportsGrid');
 
       if (!allReports.length) {
-        grid.innerHTML = '<div class="empty-state">No projects have been published yet. Please check back soon.</div>';
+        // Still show filter bar (with programme categories) and empty message
+        buildFilterBar([]);
+        initProgrammeCards();
+        applyFilter('all');
         return;
       }
 
@@ -409,4 +420,4 @@
 })();
 </script>
 </body>
-        </html>
+</html>
