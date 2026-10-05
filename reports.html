@@ -3,67 +3,271 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Debug | Bhat Foundation</title>
+<title>Reports &amp; Documentation | Bhat Foundation Welfare Society</title>
+<meta name="description" content="Download detailed project reports and event PDFs from Bhat Foundation Welfare Society — medical camps, awareness drives and community programmes in Srinagar, Jammu and Kashmir.">
+<meta name="theme-color" content="#0F2347">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<script>document.documentElement.classList.add('js');</script>
 </head>
-<body style="padding:20px;font-family:monospace;font-size:13px;line-height:1.6;">
+<body>
 
-<h1 style="font-size:20px;">Report Fetch Diagnostic</h1>
+<a class="skip-link" href="#main">Skip to content</a>
 
-<div id="output" style="background:#f5f5f5;padding:20px;border-radius:8px;white-space:pre-wrap;word-break:break-word;margin-top:20px;">Running tests...</div>
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Bhat Foundation Welfare Society — Home">
+      <span class="brand-badge">
+        <span class="brand-mark" aria-hidden="true">BF</span>
+        <img src="images/logo.png" alt="Bhat Foundation Welfare Society logo" onerror="this.remove()">
+      </span>
+      <span class="brand-text">
+        <strong>Bhat Foundation</strong>
+        <span>Welfare Society</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Open menu">
+      <span class="nav-toggle-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+
+    <nav class="primary-nav" id="primaryNav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="our-work.html">Our Work</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="reports.html" aria-current="page">Reports</a></li>
+        <li><a href="updates.html">Updates</a></li>
+        <li><a href="leadership.html">Leadership</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <a class="btn btn-primary nav-cta nav-donate" href="donate.html">Donate</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; Reports</p>
+      <h1>Reports &amp; Documentation</h1>
+      <p>Download detailed reports from our medical camps, awareness drives, education programmes and community welfare activities in Srinagar, Jammu and Kashmir.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">Project Reports</p>
+        <h2>Event PDFs &amp; documentation</h2>
+        <p class="section-sub">Click any report to view it directly — no download required, opens right here on the page.</p>
+      </div>
+
+      <div class="reports-grid" id="reportsGrid">
+        <div class="loading-state">Loading reports…</div>
+      </div>
+
+      <p id="reportsEmpty" style="display:none;text-align:center;color:var(--muted);margin-top:24px;">
+        No reports have been published yet. Please check back soon.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="cta-band">
+        <div class="cta-band-text">
+          <h2>Support our work.</h2>
+          <p>Your contribution helps us continue our programmes and document the impact.</p>
+        </div>
+        <div class="cta-band-actions">
+          <a class="btn btn-accent" href="donate.html">Donate</a>
+          <a class="btn btn-outline-light" href="contact.html">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand brand--footer" href="index.html">
+        <span class="brand-badge">
+          <span class="brand-mark" aria-hidden="true">BF</span>
+          <img src="images/logo.png" alt="" onerror="this.remove()">
+        </span>
+        <span class="brand-text"><strong>Bhat Foundation</strong><span>Welfare Society</span></span>
+      </a>
+      <p class="footer-desc">A registered social welfare organization based in Srinagar, Jammu and Kashmir, working for the upliftment and welfare of underprivileged and vulnerable communities.</p>
+    </div>
+    <nav class="footer-col" aria-label="Quick links">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="our-work.html">Our Work</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="updates.html">Updates</a></li>
+        <li><a href="leadership.html">Leadership</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="footer-col">
+      <h3>Contact</h3>
+      <ul class="footer-contact">
+        <li>Srinagar, Jammu and Kashmir</li>
+        <li><a href="mailto:bhatfoundationwelfare@gmail.com">bhatfoundationwelfare@gmail.com</a></li>
+        <li><a href="tel:+919622392553">+91-9622392553</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Registration</h3>
+      <ul class="footer-contact">
+        <li>Society Registration Act, 1860</li>
+        <li>Reg. No. 7460 &ndash; S of 2022</li>
+        <li>NITI Aayog: JK/2026/0981741</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container">
+    <nav class="footer-legal" aria-label="Legal">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="refund-policy.html">Refund &amp; Cancellation Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; <span id="year">2026</span> Bhat Foundation Welfare Society. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<div class="pdf-modal" id="pdfModal" aria-hidden="true" role="dialog" aria-labelledby="pdfModalTitle">
+  <div class="pdf-modal-head">
+    <h3 class="pdf-modal-title" id="pdfModalTitle"></h3>
+    <button class="pdf-modal-close" type="button" aria-label="Close PDF viewer" id="pdfModalClose">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="pdf-modal-frame">
+    <iframe id="pdfModalFrame" src="about:blank" title="PDF viewer"></iframe>
+    <div class="pdf-loading" id="pdfLoading">Loading report…</div>
+  </div>
+</div>
 
 <script src="js/projects-data.js"></script>
+<script src="js/main.js"></script>
 <script>
 (function () {
-  var out = document.getElementById('output');
-  var log = function (msg) { out.textContent += '\n\n' + msg; };
-  out.textContent = 'Starting...';
+  'use strict';
 
-  // Test 1: Did projects-data.js load?
-  if (typeof loadProjects !== 'function') {
-    log('❌ TEST 1 FAILED: js/projects-data.js did NOT load or did not define loadProjects().');
-    log('→ Check that the file exists at: /js/projects-data.js');
-    log('→ Open https://your-site.netlify.app/js/projects-data.js in browser — should show JS code.');
-    return;
+  function escapeHTML(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-  log('✅ TEST 1: js/projects-data.js loaded, loadProjects() exists.');
 
-  // Test 2: Can we reach the CSV URL?
-  var CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQE8hw5Bif58L-qzPb66-0uosS0nUUxKBniR8l6v7SlwWnp1ygFE1Y-AqxaHktvhq_XonSEqqpGxg__/pub?output=csv";
-  log('Testing fetch to: ' + CSV_URL.substring(0, 70) + '...');
+  function formatDate(iso) {
+    if (!iso) return '';
+    var M = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear();
+  }
 
-  fetch(CSV_URL)
-    .then(function (r) {
-      log('✅ TEST 2: Fetch reached Google. HTTP ' + r.status + ' ' + r.statusText);
-      return r.text();
-    })
-    .then(function (text) {
-      log('📄 TEST 3: Response size = ' + text.length + ' bytes');
-      log('First 400 characters:\n' + text.substring(0, 400));
+  function renderReports(reports) {
+    var grid = document.getElementById('reportsGrid');
+    var empty = document.getElementById('reportsEmpty');
+    if (!grid) return;
 
-      if (text.length < 50) {
-        log('❌ Response is too small — sheet may be empty.');
-        return;
-      }
-      log('✅ TEST 4: Sheet returned data.');
+    if (!reports || !reports.length) {
+      grid.innerHTML = '<div class="empty-state">No reports have been published yet. Please check back soon.</div>';
+      if (empty) empty.style.display = 'none';
+      return;
+    }
 
-      return loadProjects().then(function (projects) {
-        log('✅ TEST 5: loadProjects() returned ' + projects.length + ' items.');
-        if (projects.length) {
-          log('First project:\n' + JSON.stringify(projects[0], null, 2));
-        } else {
-          log('❌ No projects parsed. Check that row 2 has data and headers match.');
-        }
+    grid.innerHTML = reports.map(function (p, i) {
+      var cat = p.category ? '<span class="report-cat">' + escapeHTML(p.category) + '</span>' : '';
+      var date = p.date ? '<span class="report-date">' + escapeHTML(formatDate(p.date)) + '</span>' : '';
+      var sum = p.summary ? '<p class="report-summary">' + escapeHTML(p.summary) + '</p>' : '';
+      var btn = p.pdfId
+        ? '<button class="report-view" type="button" data-index="' + i + '">View Report <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>'
+        : '';
+
+      return '<article class="report-card">' +
+        '<div class="report-thumb">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+            '<path d="M14 3v5h5"/>' +
+            '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>' +
+            '<path d="M9 13h6M9 17h6M9 9h1"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="report-body">' +
+          cat +
+          '<h3>' + escapeHTML(p.title) + '</h3>' +
+          date +
+          sum +
+          btn +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    grid.querySelectorAll('.report-view').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var r = reports[Number(btn.getAttribute('data-index'))];
+        if (r) openPdfModal(r.pdfId, r.title);
       });
-    })
-    .catch(function (err) {
-      log('❌ FETCH FAILED');
-      log('Error: ' + (err && err.message ? err.message : err));
-      log('\nPossible causes:');
-      log('1. The CSV URL is wrong');
-      log('2. The sheet is not published to web as CSV');
-      log('3. Network/CORS block — rare for Google Sheets');
     });
+  }
+
+  var modal, modalFrame, modalTitle, modalClose, loadingEl;
+
+  function openPdfModal(id, title) {
+    if (!modal) return;
+    modalTitle.textContent = title || 'Report';
+    loadingEl.classList.remove('is-hidden');
+    modalFrame.src = 'https://drive.google.com/file/d/' + id + '/preview';
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }
+
+  function closePdfModal() {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    modalFrame.src = 'about:blank';
+  }
+
+  function initModal() {
+    modal = document.getElementById('pdfModal');
+    modalFrame = document.getElementById('pdfModalFrame');
+    modalTitle = document.getElementById('pdfModalTitle');
+    modalClose = document.getElementById('pdfModalClose');
+    loadingEl = document.getElementById('pdfLoading');
+    if (!modal) return;
+
+    modalClose.addEventListener('click', closePdfModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closePdfModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) closePdfModal();
+    });
+    modalFrame.addEventListener('load', function () {
+      if (modalFrame.src && modalFrame.src !== 'about:blank') {
+        setTimeout(function () { loadingEl.classList.add('is-hidden'); }, 300);
+      }
+    });
+  }
+
+  initModal();
+  loadProjects().then(renderReports);
 })();
 </script>
 </body>
