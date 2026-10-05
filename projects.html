@@ -67,7 +67,7 @@
         <p class="section-sub">Tap any programme to see its reports below.</p>
       </div>
 
-      <div class="grid grid-3">
+      <div class="grid grid-3" id="programmeGrid">
         <article class="card reveal programme-card" data-filter="Medical Camp" role="button" tabindex="0">
           <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20.5S3.8 15.6 3.8 9.9A4.7 4.7 0 0 1 12 6.6a4.7 4.7 0 0 1 8.2 3.3c0 5.7-8.2 10.6-8.2 10.6Z"/></svg></span>
           <h3>Medical Camps</h3>
@@ -222,7 +222,6 @@
     return d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear();
   }
 
-  // All programme-card categories — filter chips always shown for these
   var PROGRAMME_CATEGORIES = [
     'Medical Camp',
     'Education',
@@ -285,29 +284,29 @@
 
   function applyFilter(filter) {
     activeFilter = filter;
+
     var grid = document.getElementById('projectReportsGrid');
     var empty = document.getElementById('projectReportsEmpty');
     if (!grid) return;
 
     var filtered;
     if (filter === 'all') {
-      filtered = allReports;
+      filtered = allReports.slice();
     } else {
+      var target = String(filter).trim().toLowerCase();
       filtered = allReports.filter(function (p) {
-        return String(p.category || '').toLowerCase() === String(filter).toLowerCase();
+        return String(p.category || '').trim().toLowerCase() === target;
       });
     }
 
-    if (!filtered.length) {
+    if (filtered.length === 0) {
       grid.innerHTML = '';
       grid.style.display = 'none';
       if (empty) {
         empty.style.display = 'block';
-        if (filter === 'all') {
-          empty.textContent = 'No reports have been published yet. Please check back soon.';
-        } else {
-          empty.textContent = 'No reports yet for "' + filter + '". Please check back soon.';
-        }
+        empty.textContent = filter === 'all'
+          ? 'No reports have been published yet. Please check back soon.'
+          : 'No reports yet for "' + filter + '". Please check back soon.';
       }
     } else {
       grid.style.display = '';
@@ -315,7 +314,6 @@
       grid.innerHTML = filtered.map(buildCard).join('');
     }
 
-    // Chip active state
     document.querySelectorAll('.filter-chip').forEach(function (chip) {
       var isActive = chip.getAttribute('data-filter') === filter;
       chip.classList.toggle('is-active', isActive);
@@ -327,7 +325,6 @@
     var bar = document.getElementById('filterBar');
     if (!bar) return;
 
-    // Gather categories from sheet
     var sheetCats = [];
     var seen = {};
     reports.forEach(function (p) {
@@ -337,7 +334,6 @@
       if (!seen[key]) { seen[key] = true; sheetCats.push(c); }
     });
 
-    // Union of sheet categories + programme categories (preserve order: sheet first, then missing programme cats)
     var finalCats = sheetCats.slice();
     PROGRAMME_CATEGORIES.forEach(function (pc) {
       var exists = false;
@@ -349,7 +345,6 @@
 
     bar.innerHTML = '';
 
-    // "All" chip
     var allChip = document.createElement('button');
     allChip.type = 'button';
     allChip.className = 'filter-chip is-active';
@@ -363,7 +358,6 @@
     });
     bar.appendChild(allChip);
 
-    // Category chips
     finalCats.forEach(function (c) {
       var chip = document.createElement('button');
       chip.type = 'button';
@@ -381,42 +375,44 @@
   }
 
   function initProgrammeCards() {
-    document.querySelectorAll('.programme-card').forEach(function (card) {
+    var grid = document.getElementById('programmeGrid');
+    if (!grid) return;
+
+    grid.addEventListener('click', function (e) {
+      var card = e.target.closest('.programme-card');
+      if (!card) return;
+      e.preventDefault();
       var target = card.getAttribute('data-filter');
+      if (!target) return;
+      applyFilter(target);
+      var sec = document.getElementById('project-reports');
+      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 
-      function trigger() {
-        applyFilter(target);
-        var sec = document.getElementById('project-reports');
-        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    grid.addEventListener('keydown', function (e) {
+      var card = e.target.closest('.programme-card');
+      if (!card) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
       }
-
-      card.addEventListener('click', trigger);
-      card.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(); }
-      });
     });
   }
 
   function init() {
     loadProjects().then(function (reports) {
       allReports = reports || [];
-      var grid = document.getElementById('projectReportsGrid');
-
-      if (!allReports.length) {
-        // Still show filter bar (with programme categories) and empty message
-        buildFilterBar([]);
-        initProgrammeCards();
-        applyFilter('all');
-        return;
-      }
-
       buildFilterBar(allReports);
       initProgrammeCards();
       applyFilter('all');
     });
   }
 
-  init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
 </body>
