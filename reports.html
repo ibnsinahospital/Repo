@@ -200,14 +200,33 @@
         ? '<button class="report-view" type="button" data-index="' + i + '">View Report <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>'
         : '';
 
-      return '<article class="report-card">' +
-        '<div class="report-thumb">' +
+      // Thumbnail — image if provided, else PDF icon
+      var thumbHTML;
+      if (p.thumbnail) {
+        var thumbSrc;
+        if (p.thumbnail.indexOf('http') === 0) {
+          var idMatch = p.thumbnail.match(/\/file\/d\/([A-Za-z0-9_-]+)/) || p.thumbnail.match(/[?&]id=([A-Za-z0-9_-]+)/);
+          thumbSrc = idMatch
+            ? 'https://drive.google.com/thumbnail?id=' + idMatch[1] + '&sz=w800'
+            : p.thumbnail;
+        } else {
+          thumbSrc = 'images/' + p.thumbnail;
+        }
+        thumbHTML = '<div class="report-thumb report-thumb--image">' +
+          '<img src="' + escapeHTML(thumbSrc) + '" alt="' + escapeHTML(p.title) + '" loading="lazy">' +
+        '</div>';
+      } else {
+        thumbHTML = '<div class="report-thumb">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true">' +
             '<path d="M14 3v5h5"/>' +
             '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>' +
             '<path d="M9 13h6M9 17h6M9 9h1"/>' +
           '</svg>' +
-        '</div>' +
+        '</div>';
+      }
+
+      return '<article class="report-card">' +
+        thumbHTML +
         '<div class="report-body">' +
           cat +
           '<h3>' + escapeHTML(p.title) + '</h3>' +
@@ -266,9 +285,34 @@
     });
   }
 
+  // ============================================================
+  // BOOT
+  // ============================================================
   initModal();
   loadProjects().then(renderReports);
+
+  // ============================================================
+  // AUTO-OPEN PDF FROM URL (?pdf=FILE_ID&title=...)
+  // Used when someone clicks "View Full Report" on projects.html
+  // ============================================================
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var pdfParam = params.get('pdf');
+    var titleParam = params.get('title');
+
+    if (!pdfParam) return;
+
+    // Wait a tick so modal + loadProjects have finished setting up
+    setTimeout(function () {
+      openPdfModal(pdfParam, titleParam || 'Report');
+
+      // Clean the URL so refreshing doesn't re-open the PDF
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }, 400);
+  })();
 })();
 </script>
 </body>
-</html>
+  </html>
