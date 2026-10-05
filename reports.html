@@ -71,9 +71,7 @@
         <div class="loading-state">Loading reports…</div>
       </div>
 
-      <p id="reportsEmpty" style="display:none;text-align:center;color:var(--muted);margin-top:24px;">
-        No reports have been published yet. Please check back soon.
-      </p>
+      <p id="reportsEmpty" style="display:none;text-align:center;color:var(--muted);margin-top:24px;"></p>
     </div>
   </section>
 
@@ -200,7 +198,6 @@
         ? '<button class="report-view" type="button" data-index="' + i + '">View Report <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>'
         : '';
 
-      // Thumbnail — image if provided, else PDF icon
       var thumbHTML;
       if (p.thumbnail) {
         var thumbSrc;
@@ -285,28 +282,18 @@
     });
   }
 
-  // ============================================================
-  // BOOT
-  // ============================================================
   initModal();
   loadProjects().then(renderReports);
 
-  // ============================================================
-  // AUTO-OPEN PDF FROM URL (?pdf=FILE_ID&title=...)
-  // Used when someone clicks "View Full Report" on projects.html
-  // ============================================================
+  // Auto-open PDF from ?pdf=FILE_ID&title=...
   (function () {
     var params = new URLSearchParams(window.location.search);
     var pdfParam = params.get('pdf');
     var titleParam = params.get('title');
-
     if (!pdfParam) return;
 
-    // Wait a tick so modal + loadProjects have finished setting up
     setTimeout(function () {
       openPdfModal(pdfParam, titleParam || 'Report');
-
-      // Clean the URL so refreshing doesn't re-open the PDF
       if (window.history && window.history.replaceState) {
         window.history.replaceState({}, '', window.location.pathname);
       }
@@ -315,4 +302,4 @@
 })();
 </script>
 </body>
-  </html>
+</html>
