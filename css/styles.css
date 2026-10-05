@@ -379,3 +379,55 @@ body.modal-open{overflow:hidden;}
   .primary-nav a{padding:10px 13px;font-size:.9rem;}
   .nav-cta{margin-left:14px;padding:11px 22px;font-size:.88rem;}
 }
+/* ==========================================================================
+   Filter bar + chips
+   ========================================================================== */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto clamp(28px, 4vw, 44px);
+  max-width: 900px;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.filter-chip:hover {
+  border-color: var(--navy-600);
+  color: var(--navy-800);
+  transform: translateY(-1px);
+}
+.filter-chip.is-active {
+  background: var(--navy-800);
+  border-color: var(--navy-800);
+  color: #fff;
+}
+.filter-chip.is-active:hover {
+  background: var(--navy-900);
+  color: #fff;
+}
+
+/* Programme cards clickable */
+.programme-card {
+  cursor: pointer;
+  position: relative;
+}
+.programme-card:focus-visible {
+  outline: 2.5px solid var(--clay-500);
+  outline-offset: 3px;
+}
+.programme-card:active {
+  transform: translateY(-2px);
+}
