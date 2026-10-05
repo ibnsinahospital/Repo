@@ -35,15 +35,15 @@
 
     <nav class="primary-nav" id="primaryNav" aria-label="Primary">
       <ul>
-          <li><a href="index.html">Home</a></li>
-         <li><a href="about.html" aria-current="page">About Us</a></li>
-         <li><a href="our-work.html">Our Work</a></li>
-         <li><a href="projects.html">Projects</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="our-work.html">Our Work</a></li>
+        <li><a href="projects.html" aria-current="page">Projects</a></li>
         <li><a href="reports.html">Reports</a></li>
         <li><a href="updates.html">Updates</a></li>
         <li><a href="leadership.html">Leadership</a></li>
         <li><a href="contact.html">Contact</a></li>
-    </ul>
+      </ul>
       <a class="btn btn-primary nav-cta nav-donate" href="donate.html">Donate</a>
     </nav>
   </div>
@@ -113,7 +113,7 @@
       <div class="section-head section-head--center">
         <p class="eyebrow">Medical Camps</p>
         <h2>Our recent medical camps</h2>
-        <p class="section-sub">A record of the free medical camps organized by Bhat Foundation Welfare Society in collaboration with Ibn Sina Hospital, Ompora Budgam.</p>
+        <p class="section-sub">A record of the free medical camps organized by Bhat Foundation Welfare Society in collaboration with Ibn Sina Hospital, Ompora Budgam. Click <strong>View Report</strong> to read the full PDF.</p>
       </div>
 
       <div class="camps-list" id="campsList">
@@ -149,7 +149,7 @@
         </span>
         <span class="brand-text"><strong>Bhat Foundation</strong><span>Welfare Society</span></span>
       </a>
-      <p class="footer-desc">A registered social welfare organization based in Ompora Budgam, Srinagar, Jammu and Kashmir, working for the upliftment and welfare of underprivileged and vulnerable communities.</p>
+      <p class="footer-desc">A registered social welfare organization based in Srinagar, Jammu and Kashmir, working for the upliftment and welfare of underprivileged and vulnerable communities.</p>
     </div>
     <nav class="footer-col" aria-label="Quick links">
       <h3>Quick Links</h3>
@@ -158,6 +158,7 @@
         <li><a href="about.html">About Us</a></li>
         <li><a href="our-work.html">Our Work</a></li>
         <li><a href="projects.html">Projects</a></li>
+        <li><a href="reports.html">Reports</a></li>
         <li><a href="updates.html">Updates</a></li>
         <li><a href="leadership.html">Leadership</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -166,7 +167,7 @@
     <div class="footer-col">
       <h3>Contact</h3>
       <ul class="footer-contact">
-        <li>Ompura Budgam, Srinagar Central,<br>Srinagar, Jammu and Kashmir &ndash; 191111</li>
+        <li>Srinagar, Jammu and Kashmir</li>
         <li><a href="mailto:bhatfoundationwelfare@gmail.com">bhatfoundationwelfare@gmail.com</a></li>
         <li><a href="tel:+919622392553">+91-9622392553</a></li>
       </ul>
@@ -195,73 +196,103 @@
 <script src="js/camps-data.js"></script>
 <script src="js/main.js"></script>
 <script>
-  (function () {
-    'use strict';
-    var container = document.getElementById('campsList');
-    if (!container || typeof campsData === 'undefined') return;
+(function () {
+  'use strict';
 
-    function escapeHTML(str) {
-      return String(str == null ? '' : str)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  function escapeHTML(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  var arrowIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>';
+  var calIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4M16 3v4"/></svg>';
+  var orgIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></svg>';
+  var pdfIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v5h5"/><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>';
+  var arrowSvg = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
+
+  function extractDriveId(url) {
+    if (!url) return "";
+    url = String(url).trim();
+    if (url.indexOf("PASTE_") === 0) return "";
+    if (/^[A-Za-z0-9_-]{20,}$/.test(url)) return url;
+    var m = url.match(/\/file\/d\/([A-Za-z0-9_-]+)/);
+    if (m) return m[1];
+    m = url.match(/[?&]id=([A-Za-z0-9_-]+)/);
+    if (m) return m[1];
+    return url;
+  }
+
+  var container = document.getElementById('campsList');
+  if (!container || typeof campsData === 'undefined') return;
+
+  container.innerHTML = campsData.map(function (camp) {
+    var bannerHTML = '';
+    if (camp.banner) {
+      bannerHTML = '<div class="camp-banner"><img src="' + escapeHTML(camp.banner.src) + '" alt="' + escapeHTML(camp.banner.alt) + '" loading="lazy"></div>';
     }
 
-    var arrowIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>';
-    var calIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4M16 3v4"/></svg>';
-    var orgIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></svg>';
+    var statsHTML = camp.stats.map(function (s) {
+      return '<div class="camp-stat"><span class="camp-stat-value">' + escapeHTML(s.value) + '</span><span class="camp-stat-label">' + escapeHTML(s.label) + '</span></div>';
+    }).join('');
 
-    container.innerHTML = campsData.map(function (camp) {
-      var bannerHTML = '';
-      if (camp.banner) {
-        bannerHTML = '<div class="camp-banner"><img src="' + escapeHTML(camp.banner.src) + '" alt="' + escapeHTML(camp.banner.alt) + '" loading="lazy"></div>';
-      }
+    var servicesHTML = camp.services.map(function (s) {
+      return '<span class="camp-service">' + escapeHTML(s) + '</span>';
+    }).join('');
 
-      var statsHTML = camp.stats.map(function (s) {
-        return '<div class="camp-stat"><span class="camp-stat-value">' + escapeHTML(s.value) + '</span><span class="camp-stat-label">' + escapeHTML(s.label) + '</span></div>';
+    var outcomesHTML = camp.outcomes.map(function (o) {
+      return '<li>' + escapeHTML(o) + '</li>';
+    }).join('');
+
+    var galleryHTML = '';
+    if (camp.images && camp.images.length) {
+      var imgs = camp.images.map(function (img) {
+        return '<img src="' + escapeHTML(img.src) + '" alt="' + escapeHTML(img.alt) + '" loading="lazy">';
       }).join('');
+      galleryHTML = '<div class="camp-block"><h4>Photographs from the Camp</h4><div class="camp-gallery">' + imgs + '</div></div>';
+    }
 
-      var servicesHTML = camp.services.map(function (s) {
-        return '<span class="camp-service">' + escapeHTML(s) + '</span>';
-      }).join('');
+    // Report link → redirects to reports.html with PDF ID + title
+    var reportId = camp.report ? extractDriveId(camp.report.pdfUrl) : "";
+    var reportHTML = reportId
+      ? '<div class="camp-block camp-report-block">' +
+          '<a class="camp-report-btn" href="reports.html?pdf=' +
+            encodeURIComponent(reportId) +
+            '&title=' + encodeURIComponent(camp.title) +
+          '">' +
+            pdfIcon +
+            '<span>View Full Report (PDF)</span>' +
+            arrowSvg +
+          '</a>' +
+        '</div>'
+      : '';
 
-      var outcomesHTML = camp.outcomes.map(function (o) {
-        return '<li>' + escapeHTML(o) + '</li>';
-      }).join('');
-
-      var galleryHTML = '';
-      if (camp.images && camp.images.length) {
-        var imgs = camp.images.map(function (img) {
-          return '<img src="' + escapeHTML(img.src) + '" alt="' + escapeHTML(img.alt) + '" loading="lazy">';
-        }).join('');
-        var cls = camp.images.length === 1 ? 'camp-gallery camp-gallery--single' : 'camp-gallery';
-        galleryHTML = '<div class="camp-block"><h4>Photographs from the Camp</h4><div class="' + cls + '">' + imgs + '</div></div>';
-      }
-
-      return '<article class="camp-card" id="' + escapeHTML(camp.id) + '">' +
-        bannerHTML +
-        '<div class="camp-head">' +
-          '<div class="camp-date-badge" aria-hidden="true">' +
-            '<span class="day">' + escapeHTML(camp.dateBadge.day) + '</span>' +
-            '<span class="month">' + escapeHTML(camp.dateBadge.month) + '</span>' +
-            '<span class="year">' + escapeHTML(camp.dateBadge.year) + '</span>' +
-          '</div>' +
-          '<div class="camp-head-info">' +
-            '<h3>' + escapeHTML(camp.title) + '</h3>' +
-            '<div class="camp-meta">' +
-              '<span>' + calIcon + escapeHTML(camp.date) + ' &middot; ' + escapeHTML(camp.duration) + '</span>' +
-              '<span>' + arrowIcon + escapeHTML(camp.location) + '</span>' +
-              '<span>' + orgIcon + escapeHTML(camp.organiser) + '</span>' +
-            '</div>' +
+    return '<article class="camp-card" id="' + escapeHTML(camp.id) + '">' +
+      bannerHTML +
+      '<div class="camp-head">' +
+        '<div class="camp-date-badge" aria-hidden="true">' +
+          '<span class="day">' + escapeHTML(camp.dateBadge.day) + '</span>' +
+          '<span class="month">' + escapeHTML(camp.dateBadge.month) + '</span>' +
+          '<span class="year">' + escapeHTML(camp.dateBadge.year) + '</span>' +
+        '</div>' +
+        '<div class="camp-head-info">' +
+          '<h3>' + escapeHTML(camp.title) + '</h3>' +
+          '<div class="camp-meta">' +
+            '<span>' + calIcon + escapeHTML(camp.date) + ' &middot; ' + escapeHTML(camp.duration) + '</span>' +
+            '<span>' + arrowIcon + escapeHTML(camp.location) + '</span>' +
+            '<span>' + orgIcon + escapeHTML(camp.organiser) + '</span>' +
           '</div>' +
         '</div>' +
-        '<p class="camp-summary">' + escapeHTML(camp.summary) + '</p>' +
-        '<div class="camp-stats">' + statsHTML + '</div>' +
-        '<div class="camp-block"><h4>Services Provided</h4><div class="camp-services">' + servicesHTML + '</div></div>' +
-        '<div class="camp-block"><h4>Key Outcomes &amp; Impact</h4><ul class="camp-outcomes">' + outcomesHTML + '</ul></div>' +
-        galleryHTML +
-      '</article>';
-    }).join('');
-  })();
+      '</div>' +
+      '<p class="camp-summary">' + escapeHTML(camp.summary) + '</p>' +
+      '<div class="camp-stats">' + statsHTML + '</div>' +
+      '<div class="camp-block"><h4>Services Provided</h4><div class="camp-services">' + servicesHTML + '</div></div>' +
+      '<div class="camp-block"><h4>Key Outcomes &amp; Impact</h4><ul class="camp-outcomes">' + outcomesHTML + '</ul></div>' +
+      galleryHTML +
+      reportHTML +
+    '</article>';
+  }).join('');
+})();
 </script>
 </body>
-</html>
+  </html>
