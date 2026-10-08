@@ -244,11 +244,21 @@
 
   var modal, modalFrame, modalTitle, modalClose, loadingEl;
 
-  function openPdfModal(id, title) {
+  function openPdfModal(pdfRef, title) {
     if (!modal) return;
     modalTitle.textContent = title || 'Report';
     loadingEl.classList.remove('is-hidden');
-    modalFrame.src = 'https://drive.google.com/file/d/' + id + '/preview';
+
+    var src;
+    if (pdfRef.indexOf("url:") === 0) {
+      src = pdfRef.substring(4);
+    } else if (pdfRef.indexOf("drive:") === 0) {
+      src = 'https://drive.google.com/file/d/' + pdfRef.substring(6) + '/preview';
+    } else {
+      src = 'https://drive.google.com/file/d/' + pdfRef + '/preview';
+    }
+
+    modalFrame.src = src;
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -285,15 +295,23 @@
   initModal();
   loadProjects().then(renderReports);
 
-  // Auto-open PDF from ?pdf=FILE_ID&title=...
   (function () {
     var params = new URLSearchParams(window.location.search);
     var pdfParam = params.get('pdf');
     var titleParam = params.get('title');
     if (!pdfParam) return;
 
+    var ref;
+    if (pdfParam.indexOf("http") === 0) {
+      ref = "url:" + pdfParam;
+    } else if (pdfParam.indexOf("url:") === 0 || pdfParam.indexOf("drive:") === 0) {
+      ref = pdfParam;
+    } else {
+      ref = "drive:" + pdfParam;
+    }
+
     setTimeout(function () {
-      openPdfModal(pdfParam, titleParam || 'Report');
+      openPdfModal(ref, titleParam || 'Report');
       if (window.history && window.history.replaceState) {
         window.history.replaceState({}, '', window.location.pathname);
       }
