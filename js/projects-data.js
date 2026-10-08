@@ -1,11 +1,12 @@
 /* ==========================================================================
    Bhat Foundation Welfare Society — Projects & Reports Loader
    Reads rows from the published Projects Google Sheet.
-   Used by: reports.html
+   Supports both GitHub Pages URLs and Google Drive links.
    ========================================================================== */
 
 const PROJECTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQE8hw5Bif58L-qzPb66-0uosS0nUUxKBniR8l6v7SlwWnp1ygFE1Y-AqxaHktvhq_XonSEqqpGxg__/pub?output=csv";
 
+/* ---------- CSV parser ---------- */
 function parseCSVProject(text) {
   var rows = [], row = [], field = "", inQuotes = false, i = 0;
   if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
@@ -52,19 +53,35 @@ function csvToObjectsProject(rows) {
   return out;
 }
 
+/* ---------- Extract PDF reference ----------
+   Returns:
+     "url:https://..."  → direct URL (GitHub Pages)
+     "drive:FILE_ID"    → Google Drive file ID
+   -------------------------------------------- */
 function extractDriveId(url) {
   if (!url) return "";
   url = String(url).trim();
-  if (/^[A-Za-z0-9_-]{20,}$/.test(url)) return url;
+  if (url.indexOf("PASTE_") === 0) return "";
+
+  // GitHub Pages or any non-Drive http(s) URL
+  if (url.indexOf("http") === 0 && url.indexOf("drive.google.com") === -1) {
+    return "url:" + url;
+  }
+
+  // Drive link → extract file ID
   var m = url.match(/\/file\/d\/([A-Za-z0-9_-]+)/);
-  if (m) return m[1];
+  if (m) return "drive:" + m[1];
+
   m = url.match(/[?&]id=([A-Za-z0-9_-]+)/);
-  if (m) return m[1];
-  m = url.match(/\/d\/([A-Za-z0-9_-]+)/);
-  if (m) return m[1];
-  return url;
+  if (m) return "drive:" + m[1];
+
+  // Bare file ID — assume Drive
+  if (/^[A-Za-z0-9_-]{20,}$/.test(url)) return "drive:" + url;
+
+  return "drive:" + url;
 }
 
+/* ---------- Loader ---------- */
 function loadProjects() {
   if (!PROJECTS_CSV_URL || PROJECTS_CSV_URL.indexOf("PASTE_") === 0) {
     return Promise.resolve([]);
